@@ -4,7 +4,18 @@ const db = require("../models");
 
 //get all posts
 router.get('/posts', async (req, res) => {
-    const posts = await db.Post.findAll({ attributes: ['id', 'title', 'image', 'category', ['createdAt', 'date']] });
+    const posts = await db.Post.findAll({
+        attributes: [
+            'id',
+            'title',
+            'image',
+            'category',
+            ['createdAt', 'date']
+        ],
+        order: [
+            ['createdAt', 'DESC'],
+        ],
+    });
     console.log(posts)
     res.status(200).json(posts)
 })
