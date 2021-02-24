@@ -4,7 +4,8 @@ const db = require("../models");
 
 //get all posts
 router.get('/posts', async (req, res) => {
-    const posts = await db.Post.findAll();
+    const posts = await db.Post.findAll({ attributes: ['id', 'title', 'image', 'category', ['createdAt', 'date']] });
+    console.log(posts)
     res.status(200).json(posts)
 })
 //get by post id
@@ -19,15 +20,21 @@ router.get('/posts/:id', async (req, res) => {
 //post a blog post to api
 router.post('/posts', async (req, res) => {
     var { title, content, image, category } = req.body;
+    var regex = new RegExp(/(https?:\/\/.*\.(?:png|jpg))/i)
     try {
         if (title && content && image && category) {
-            var post = await db.Post.create({
-                title,
-                content,
-                image,
-                category
-            })
-            res.status(200).json(post);
+            if (regex.test(image)) {
+                var post = await db.Post.create({
+                    title,
+                    content,
+                    image,
+                    category
+                })
+                res.status(200).json(post);
+            }
+            else {
+                res.status(400).send('image must be an url')
+            }
         }
         else {
             res.status(400).json(err = "there are missing parameters")
@@ -39,7 +46,7 @@ router.post('/posts', async (req, res) => {
     }
 })
 // edit post data
-router.patch('/posts/:id', async (req, res) => {
+router.patch('/posts/:id', (req, res) => {
     var id = req.params.id;
     var { title, content, image, category } = req.body;
     db.Post.findOne({ where: { id } }).then(data => {
