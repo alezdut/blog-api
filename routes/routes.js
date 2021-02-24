@@ -16,7 +16,6 @@ router.get('/posts', async (req, res) => {
             ['createdAt', 'DESC'],
         ],
     });
-    console.log(posts)
     res.status(200).json(posts)
 })
 //get by post id
